@@ -1,0 +1,4 @@
+22/ssh
+53/domain
+80/http
+631/ipp
