@@ -20,8 +20,8 @@
 #          BUGS: ---
 #         NOTES: Need mlocate package for find the path of software packages
 #        AUTHOR: karthikeyan U
-#       CREATED: 04/01/2018 9:30:47  IST
-#      REVISION: 0.1 
+#       CREATED: 10/08/2018 9:30:47  IST
+#      REVISION: 0.5 
 # ####################################################################################################################
 mainpath=`pwd`
 begin=$(date +%s) 
@@ -402,9 +402,10 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]} -version 2>&1  | grep version | awk '{print $3}'`"
+	   version="`${array[c]} -version 2>&1  | grep version | awk '{print $3}' |grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
-	   modules="`${array[c]} -M 2>&1 |  grep -v "Loaded Modules:"`"
+	   #modules="`${array[c]} -M 2>&1 |  grep -v "Loaded Modules:"`"
+	   modules="`${array[c]} -M 2>error.log |  grep -v "Loaded Modules:"`"
            ${array[c]} -M 2>&1 |  grep -v "Loaded Modules:" | awk '{$1=$1;print}' >$mainpath/tempfiles/apachemod.txt 
 	       cat $mainpath/tempfiles/apachemod.txt | sed  's/\(.*\)/"\1",/g' | awk '{a[NR]=$0} END {for (i=1;i<NR;i++) print a[i];sub(/.$/,"",a[NR]);print a[NR]}'   > $mainpath/tempfiles/apachemod_result.txt 
 
@@ -462,7 +463,7 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]} -v  2>&1 | grep cli | awk '{print $1 $2}'`"
+	   version="`${array[c]} -v  2>&1 | grep cli | awk '{print $1 $2}' | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 	   modules="`${array[c]} -m 2>&1`"
 	   ${array[c]} -m 2>&1 | awk '{$1=$1;print}' >$mainpath/tempfiles/phpmod.txt
@@ -625,7 +626,8 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]} -V 2>&1 `"
+	   #version="`${array[c]} -V 2>&1 `"
+           version="`${array[c]} --version 2>&1 | awk '{print $2}'| grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 
 	   echo "Version : " $version
@@ -676,7 +678,8 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]} -V  2>&1 | grep psql | awk '{print $3}'`"
+	   #version="`${array[c]} -V  2>&1 | grep psql | awk '{print $3}'`"
+	   version="`${array[c]} -V  2>&1 | grep psql | awk '{print $3}' | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 
 	   echo "Version : " $version
@@ -735,7 +738,8 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]} --version  2>&1|grep mysqld|awk '{print $3}'`"
+	   #version="`${array[c]} --version  2>&1|grep mysqld|awk '{print $3}'`"
+	   version="`${array[c]} --version  2>&1|grep mysqld|awk '{print $3}'| grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 
 	   echo "Version : " $version
@@ -791,7 +795,8 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]} --version  2>&1|grep mysql|awk '{print $5}'| sed 's/,//g'`"
+	   #version="`${array[c]} --version  2>&1|grep mysql|awk '{print $5}'| sed 's/,//g'`"
+	   version="`${array[c]} --version  2>&1|grep mysql|awk '{print $5}'| sed 's/,//g' | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 
 	   echo "Version : " $version
@@ -847,7 +852,8 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]} --version 2>&1 | grep -Eo    'v[0-9].[0-9]*.[0-9]'`"
+	   #version="`${array[c]} --version 2>&1 | grep -Eo    'v[0-9].[0-9]*.[0-9]'`"
+	   version="`${array[c]} --version 2>&1 | grep -Eo    'v[0-9].[0-9]*.[0-9]' | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 	   echo "Version : " $version
 	   echo "path:" $path
@@ -902,6 +908,7 @@ then
 	for (( c=1; c<=$total; c++ ))
 	do
 	   version="`${array[c]}  -V  2>&1 | grep Python |  awk '{print $2}' `"
+	   version="`${array[c]}  -V  2>&1 | grep Python |  awk '{print $2}' | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?' `"
 	   path=${array[c]}
 	   echo "Version : " $version
 	   echo "path:" $path
@@ -1069,7 +1076,8 @@ then
 	  
 	  if [ $versionflag -eq 0 ]
 	  then
-      version="`$mainpath/packages/wp-cli core version --allow-root`"
+      #version="`$mainpath/packages/wp-cli core version --allow-root`"
+      version="`$mainpath/packages/wp-cli core version --allow-root | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	  fi
 	  
 	  if [ $modulesflag -eq 0 ]
@@ -1266,7 +1274,8 @@ then
 	done < "$mainpath/tempfiles/store.txt"
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]}  -v  2>&1`"
+	   #version="`${array[c]}  -v  2>&1`"
+	   version="`${array[c]}  -v  2>&1 | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 	   echo "Version : " $version
 	   echo "path:" $path
@@ -1317,7 +1326,8 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]}  -v  2>&1`"
+           #version="`${array[c]}  -v  2>&1`"
+	   version="`${array[c]}  -v  2>&1 | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 	   echo "Version : " $version
 	   echo "path:" $path
@@ -1368,7 +1378,8 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]} -v 2>&1  | awk -F":" '{print $2}'`"
+	   #version="`${array[c]} -v 2>&1  | awk -F":" '{print $2}'`"
+	   version="`${array[c]} -v 2>&1  | awk -F":" '{print $2}' | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 	   modules="`${array[c]} -V 2>&1 | tr -- - '\n' | grep module | grep -v 'modules\|path'`"
        ${array[c]} -V 2>&1 | tr -- - '\n' | grep module | grep -v 'modules\|path' >$mainpath/tempfiles/nginxmod.txt 
@@ -1424,7 +1435,8 @@ then
 
 	for (( c=1; c<=$total; c++ ))
 	do
-	   version="`${array[c]} -v 2>&1  | grep Open | awk -F"Open" '{print $1}'`"
+	   #version="`${array[c]} -v 2>&1  | grep Open | awk -F"Open" '{print $1}'`"
+	   version="`${array[c]} -v 2>&1  | grep Open | awk -F"Open" '{print $1}' | grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
 	   path=${array[c]}
 	   modules="`${array[c]} -v 2>&1 | awk '{$1=$1;print}' | grep -v  'module\|Open' | grep '[^[:blank:]]'`"
        ${array[c]} -v 2>&1 | awk '{$1=$1;print}' | grep -v  'module\|Open' | grep '[^[:blank:]]' >$mainpath/tempfiles/nginxmod.txt 
@@ -1493,6 +1505,209 @@ fi
 echo "Firewall status:&nbsp;&nbsp $status "        >>report.html
 echo  "</td> </tr>  "                              >>report.html
 echo ""\"firewall_status"\": "\"$status"\","       >>report.json                
+
+########################################################################
+########################################################################
+########################################################################
+
+##########################################################################
+#  List of running services from process state                           #
+##########################################################################
+> $mainpath/tempfiles/process
+ps -aux  > $mainpath/tempfiles/process
+
+
+
+ #########################   HTTPD Service  version,path and modules  #########################################################
+echo "apache"
+echo "------"
+> $mainpath/tempfiles/store.txt
+cat $mainpath/tempfiles/process | awk '{print $11}' | grep apache* | uniq > $mainpath/tempfiles/store.txt
+
+FILENAME="$mainpath/tempfiles/store.txt"
+if [ -s ${FILENAME} ]
+then
+    ##echo "File has data"
+    echo  " <tr>                                            "       >>  report.html
+    echo  " <td class=""text-left"">Apache-Run </td>             "       >>  report.html
+    echo  " <td class=""text-left""><br>		    "  	    >>  report.html
+    echo "\"apache-run"\" : "[" >> report.json
+    total="$(cat $mainpath/tempfiles/store.txt  | wc -l )"
+	i=1
+	while IFS= read -r var
+	do
+	  array[ $i ]=$var
+	  (( i++ ))
+	done < "$mainpath/tempfiles/store.txt"
+
+	for (( c=1; c<=$total; c++ ))
+	do
+	   version="`${array[c]} -version 2>1  | grep version | awk '{print $3}'|grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?' `"
+	   path=${array[c]}
+	   #modules="`${array[c]} -M 2>1 |  grep -v "Loaded Modules:"`"
+	   #modules="`${array[c]} -M 2>error.log |  grep -v "Loaded Modules:"`"
+          # ${array[c]} -M 2>&1 |  grep -v "Loaded Modules:" | awk '{$1=$1;print}' >$mainpath/tempfiles/apachemod.txt 
+	    #   cat $mainpath/tempfiles/apachemod.txt | sed  's/\(.*\)/"\1",/g' | awk '{a[NR]=$0} END {for (i=1;i<NR;i++) print a[i];sub(/.$/,"",a[NR]);print a[NR]}'   > $mainpath/tempfiles/apachemod_result.txt 
+
+	   echo "Version : " $version
+	   echo "path:" $path
+	  # echo "modules:" $modules
+	  # echo ""
+	  # echo "<font color="blue">Version:</font>&nbsp;&nbsp;$version<hr><font color="blue">Path:</font>&nbsp;&nbsp;$path<hr><font color="blue">Modules: </font> $modules " >>report.html
+echo "<font color="blue">Version:</font>&nbsp;&nbsp;$version<hr><font color="blue">Path:</font>&nbsp;&nbsp;$path ">>report.html
+
+
+           if [ $c -lt $total ]
+		   then
+         	echo " <hr size="4" color="#fd00cb" /> " >> report.html
+	        echo "{" "\"version"\": "\"$version"\" ",""\"path"\":"\"$path"\"",""\"modules"\":[`cat 			$mainpath/tempfiles/apachemod_result.txt`]"}" ",">>  report.json
+           else 
+                echo "{" "\"version"\": "\"$version"\" ",""\"path"\":"\"$path"\"",""\"modules"\":[`cat 			$mainpath/tempfiles/apachemod_result.txt`]"}" "],">>  report.json 
+		   fi 
+	done
+   	echo  "</td>                                            "        >>  report.html
+        echo  " <td align=center>  Apache:2.4.27   </td>  </tr> "        >> report.html
+else
+  echo "Apache httpd not found!!"
+  echo "\"apache"\":["\"not detected"\"], >> report.json 
+	
+	echo  " <tr> <td class=""text-left"">Apache-Run</td>"       >>  report.html
+	echo  " <td align=center>   Not Detected </td> "        >> report.html
+	echo  " <td align=center>  Apache:2.4.27</td></tr> "    >> report.html
+fi
+
+
+
+
+ #############JAVA version  #############################################################
+
+echo "OpenJDK"
+echo "-------"
+
+
+> $mainpath/tempfiles/store.txt
+cat $mainpath/tempfiles/process | awk '{print $11}' | grep java  > $mainpath/tempfiles/store.txt
+
+
+
+
+FILENAME="$mainpath/tempfiles/store.txt"
+
+###########################>>>>>>>>>>>>>>>>>>>>>>
+
+if [ -s ${FILENAME} ]
+then
+    echo  " <tr>                                            "       >>  report.html
+    echo  " <td class=""text-left"">JAVA-Run </td>              "       >>  report.html
+    echo  " <td class=""text-left""><br>		    "  	    >>  report.html
+    echo "\"java-run"\" : "[" >> report.json
+
+    total="$(cat $mainpath/tempfiles/store.txt  | wc -l )"
+	i=1
+	while IFS= read -r var
+	do
+	  array[ $i ]=$var
+	  (( i++ ))
+	done < "$mainpath/tempfiles/store.txt"
+
+	for (( c=1; c<=$total; c++ ))
+	do
+	   version="`${array[c]} -version   2>&1 | grep version | awk '{print $3}' | sed 's/"//g'`"
+	   path=${array[c]}
+	   echo "Version : " $version
+	   echo "path:" $path
+	   echo ""
+  	   echo "<font color="blue">Version:</font>&nbsp;&nbsp;$version<hr><font color="blue">Path:</font>&nbsp;&nbsp;$path " >>report.html
+       if [ $c -lt $total ]
+	   then
+      	echo " <hr size="4" color="#fd00cb" /> " >> report.html
+		echo "{" "\"version"\": "\"$version"\" ",""\"path"\":"\"$path"\" "}," >>  report.json
+       else 
+        echo "{" "\"version"\": "\"$version"\" ",""\"path"\":"\"$path"\""}]," >>  report.json
+	  fi 
+	done
+   	echo  "</td>                                          "        >>  report.html
+	echo  " <td align=center>  Open JDK Java: 1.8.0        </td>  </tr> "        >> report.html
+else
+  echo "Java not found !"
+  echo "\"java"\":["\"not detected"\"], >> report.json 
+   echo  " <tr> <td class=""text-left"">JAVA-Run</td>"       >>  report.html
+	echo  " <td align=center>   Not Detected </td> "        >> report.html
+	echo  " <td align=center>  Open JDK Java: 1.8.0 </td></tr> "    >> report.html
+fi
+
+
+#################### PostgresSQl   Server #######################################################
+echo "PostgreSQL SERVER"
+echo "-----------------"
+
+>$mainpath/tempfiles/store.txt
+cat $mainpath/tempfiles/process |awk '{print $11}' | grep /bin/postgres > $mainpath/tempfiles/store.txt
+FILENAME="$mainpath/tempfiles/store.txt"
+##############################################################################################
+if [ -s ${FILENAME} ]
+then
+    echo  " <tr>                                            "       >>  report.html
+    echo  " <td class=""text-left"">PostgreSQL Server-Run </td> "       >>  report.html
+    echo  " <td class=""text-left""><br>		    "  	    >>  report.html
+    echo "\"postgresql_server-run"\" : "[" >> report.json
+    total="$(cat $mainpath/tempfiles/store.txt  | wc -l )"
+	i=1
+	while IFS= read -r var
+	do
+	  array[ $i ]=$var
+	  (( i++ ))
+	done < "$mainpath/tempfiles/store.txt"
+
+	for (( c=1; c<=$total; c++ ))
+	do
+	   version="`${array[c]} -V| grep -Eo '[+-]?[0-9]+([.][0-9]+)?+([.][0-9]+)?'`"
+	   path=${array[c]}
+
+	   echo "Version : " $version
+	   echo "path:" $path
+	   echo ""
+	   echo "<font color="blue">Version:</font>&nbsp;&nbsp;$version<hr><font color="blue">Path:</font>&nbsp;&nbsp;$path " >>report.html
+       if [ $c -lt $total ]
+	   then
+       	echo " <hr size="4" color="#fd00cb" /> " >> report.html
+		echo "{" "\"version"\": "\"$version"\" ",""\"path"\":"\"$path"\" "}," >>  report.json
+       else 
+        echo "{" "\"version"\": "\"$version"\" ",""\"path"\":"\"$path"\""}]," >>  report.json
+	  fi 
+	done
+   	echo  "</td>                                          "        >>  report.html
+	echo  " <td align=center>  PostgreSQL Server:9.6.3         </td>  </tr> "        >> report.html
+else
+  echo "PostgreSQl_Server not found!"
+  echo "\"postgresql_server"\":["\"not detected"\"], >> report.json 
+    echo  " <tr> <td class=""text-left"">PostgreSQL Server-Run</td>"       >>  report.html
+	echo  " <td align=center>   Not Detected </td> "        >> report.html
+	echo  " <td align=center>  PostgreSQL Server:9.6.3 </td></tr> "    >> report.html
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #####################################################################################
